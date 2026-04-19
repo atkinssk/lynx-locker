@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
-import { X, Link as LinkIcon, Plus, Tag as TagIcon, AlertTriangle } from 'lucide-react';
-import { isDuplicateUrl } from '../utils/url';
+import { X, Link as LinkIcon, Plus, Tag as TagIcon, AlertTriangle, Save } from 'lucide-react';
+import { isDuplicateUrl, normalizeUrl } from '../utils/url';
 
-export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [], initialUrl = '', initialTags = '' }) {
+export default function AddBookmarkModal({ 
+  isOpen, 
+  onClose, 
+  onAdd, 
+  onUpdate,
+  bookmarks = [], 
+  initialUrl = '', 
+  initialTags = '',
+  editingBookmark = null 
+}) {
   const [url, setUrl] = useState(initialUrl);
   const [tagInput, setTagInput] = useState(initialTags);
   const [loading, setLoading] = useState(false);
@@ -11,11 +20,16 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [
 
   useEffect(() => {
     if (isOpen) {
-      setUrl(initialUrl || '');
-      setTagInput(initialTags || '');
+      if (editingBookmark) {
+        setUrl(editingBookmark.url || '');
+        setTagInput(editingBookmark.tags?.join(', ') || '');
+      } else {
+        setUrl(initialUrl || '');
+        setTagInput(initialTags || '');
+      }
       setError('');
     }
-  }, [isOpen, initialUrl, initialTags]);
+  }, [isOpen, initialUrl, initialTags, editingBookmark]);
 
   const handleUrlChange = (newUrl) => {
     setUrl(newUrl);
@@ -24,9 +38,12 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [
 
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!url) return;
 
-    if (isDuplicateUrl(url, bookmarks)) {
+    // Duplicate check: only if URL changed or if adding new
+    const isUrlChanged = editingBookmark ? normalizeUrl(url) !== normalizeUrl(editingBookmark.url) : true;
+    if (isUrlChanged && isDuplicateUrl(url, bookmarks)) {
       setError('This URL is already in your bookmarks.');
       return;
     }
@@ -39,7 +56,12 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [
     
     const uniqueTags = [...new Set(tags)];
 
-    await onAdd({ url, tags: uniqueTags });
+    if (editingBookmark) {
+      await onUpdate(editingBookmark.id, { url, tags: uniqueTags });
+    } else {
+      await onAdd({ url, tags: uniqueTags });
+    }
+
     setLoading(false);
     setUrl('');
     setTagInput('');
@@ -49,7 +71,9 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [
   return (
     <Modal show={isOpen} onHide={onClose} centered className="premium-modal">
       <Modal.Header className="modal-header d-flex justify-content-between align-items-center px-4 py-3">
-        <Modal.Title className="h4 mb-0 text-white fw-bold">Add Bookmark</Modal.Title>
+        <Modal.Title className="h4 mb-0 text-white fw-bold">
+          {editingBookmark ? 'Edit Bookmark' : 'Add Bookmark'}
+        </Modal.Title>
         <button onClick={onClose} className="btn btn-premium-ghost p-1.5 border-0">
           <X size={24} />
         </button>
@@ -109,8 +133,8 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [
               <div className="spinner-border spinner-border-sm text-light" role="status" />
             ) : (
               <>
-                <Plus size={20} />
-                <span>Save Bookmark</span>
+                {editingBookmark ? <Save size={20} /> : <Plus size={20} />}
+                <span>{editingBookmark ? 'Update Bookmark' : 'Save Bookmark'}</span>
               </>
             )}
           </button>

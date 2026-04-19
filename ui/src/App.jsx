@@ -12,6 +12,7 @@ import {
   orderBy, 
   deleteDoc, 
   doc, 
+  updateDoc,
   serverTimestamp 
 } from 'firebase/firestore';
 import { auth, db, googleProvider } from './firebase';
@@ -33,6 +34,7 @@ function App() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [initialUrl, setInitialUrl] = useState('');
   const [initialTags, setInitialTags] = useState('');
+  const [editingBookmark, setEditingBookmark] = useState(null);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
@@ -117,6 +119,30 @@ function App() {
       console.error("Error deleting bookmark:", error);
     }
   };
+  
+  const handleUpdateBookmark = async (id, data) => {
+    if (!user) return;
+    try {
+      await updateDoc(doc(db, 'users', user.uid, 'bookmarks', id), {
+        ...data,
+        metadataScrapedAt: null // Reset scraping to re-fetch if URL changed
+      });
+    } catch (error) {
+      console.error("Error updating bookmark:", error);
+    }
+  };
+
+  const handleEdit = (bookmark) => {
+    setEditingBookmark(bookmark);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingBookmark(null);
+    setInitialUrl('');
+    setInitialTags('');
+  };
 
   if (loading) {
     return (
@@ -134,7 +160,10 @@ function App() {
         onLogout={handleLogout} 
         onShowShortcuts={() => setIsShortcutsModalOpen(true)}
         onImport={() => setIsImportModalOpen(true)}
-        onAdd={() => setIsModalOpen(true)}
+        onAdd={() => {
+          setEditingBookmark(null);
+          setIsModalOpen(true);
+        }}
       />
 
       <main className="container-xl px-4">
@@ -164,6 +193,7 @@ function App() {
                       <BookmarkCard 
                         bookmark={bookmark} 
                         onDelete={handleDeleteBookmark} 
+                        onEdit={handleEdit}
                       />
                     </div>
                   ))}
@@ -219,11 +249,13 @@ function App() {
 
       <AddBookmarkModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={handleCloseModal} 
         onAdd={handleAddBookmark} 
+        onUpdate={handleUpdateBookmark}
         bookmarks={bookmarks}
         initialUrl={initialUrl}
         initialTags={initialTags}
+        editingBookmark={editingBookmark}
       />
 
       <ImportModal 

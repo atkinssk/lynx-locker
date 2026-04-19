@@ -1,8 +1,8 @@
 import React from 'react';
-import { ExternalLink, Tag, Clock, Trash2 } from 'lucide-react';
+import { ExternalLink, Tag, Clock, Trash2, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function BookmarkCard({ bookmark, onDelete }) {
+export default function BookmarkCard({ bookmark, onDelete, onEdit }) {
   const { title, url, description, favicon, tags, metadataScrapedAt } = bookmark;
 
   return (
@@ -23,12 +23,20 @@ export default function BookmarkCard({ bookmark, onDelete }) {
                 <ExternalLink size={20} className="text-primary" />
               )}
             </div>
-            <button 
-              onClick={() => onDelete(bookmark.id)}
-              className="btn btn-sm btn-outline-danger border-0 opacity-50 hover-opacity-100 transition-opacity p-1.5 rounded-3"
-            >
-              <Trash2 size={18} />
-            </button>
+            <div className="d-flex gap-1">
+              <button 
+                onClick={() => onEdit(bookmark)}
+                className="btn btn-sm btn-outline-primary border-0 opacity-50 hover-opacity-100 transition-opacity p-1.5 rounded-3"
+              >
+                <Pencil size={18} />
+              </button>
+              <button 
+                onClick={() => onDelete(bookmark.id)}
+                className="btn btn-sm btn-outline-danger border-0 opacity-50 hover-opacity-100 transition-opacity p-1.5 rounded-3"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
           </div>
 
           <h5 className="card-title text-white fw-bold mb-2 text-truncate" title={title || url}>
