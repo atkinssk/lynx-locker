@@ -133,41 +133,26 @@ function App() {
         onLogin={handleLogin} 
         onLogout={handleLogout} 
         onShowShortcuts={() => setIsShortcutsModalOpen(true)}
+        onImport={() => setIsImportModalOpen(true)}
+        onAdd={() => setIsModalOpen(true)}
       />
 
       <main className="container-xl px-4">
         {user ? (
           <div className="animate-fade-in">
-            <div className="row g-4 align-items-center justify-content-between mb-5">
-              <div className="col-12 col-md-6 col-lg-5">
+            <div className="row g-4 align-items-center mb-5">
+              <div className="col-12 col-md-8 col-lg-6 mx-auto">
                 <div className="position-relative">
                   <Search className="position-absolute translate-middle-y text-muted" style={{left: '1rem', top: '50%'}} size={20} />
                   <input 
                     type="text" 
-                    placeholder="Search by title, tag, or URL..." 
+                    placeholder="Search your bookmarks..." 
                     className="form-control premium-input shadow-sm"
                     style={{paddingLeft: '3rem'}}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-              </div>
-
-              <div className="col-12 col-md-auto d-flex gap-2">
-                <button 
-                  onClick={() => setIsImportModalOpen(true)} 
-                  className="btn btn-premium-ghost px-4 shadow-sm"
-                >
-                  <Upload size={20} />
-                  <span className="d-none d-sm-inline">Import</span>
-                </button>
-                <button 
-                  onClick={() => setIsModalOpen(true)} 
-                  className="btn btn-premium px-4 shadow-lg flex-grow-1"
-                >
-                  <Plus size={20} />
-                  <span>Add Bookmark</span>
-                </button>
               </div>
             </div>
 
