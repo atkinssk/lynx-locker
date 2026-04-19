@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:ui": "cd ui && npm run dev",
-    "dev:emulators": "firebase emulators:start",
+    "dev:emulators": "firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data",
     "dev": "concurrently \"npm run dev:emulators\" \"npm run dev:ui\"",
     "build:ui": "cd ui && npm run build",
     "deploy": "firebase deploy"
