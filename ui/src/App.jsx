@@ -113,14 +113,14 @@ function App() {
   const handleLogin = () => signInWithPopup(auth, googleProvider);
   const handleLogout = () => signOut(auth);
 
-  const handleAddBookmark = async ({ url, tags }) => {
+  const handleAddBookmark = async ({ url, tags, title }) => {
     if (!user) return;
     try {
       await addDoc(collection(db, 'users', user.uid, 'bookmarks'), {
         url,
         tags,
         createdAt: serverTimestamp(),
-        title: null,
+        title: title || null,
         description: null,
         favicon: null
       });

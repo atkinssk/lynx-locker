@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
-import { X, Link as LinkIcon, Plus, Tag as TagIcon, AlertTriangle, Save } from 'lucide-react';
+import { X, Link as LinkIcon, Plus, Tag as TagIcon, AlertTriangle, Save, Type } from 'lucide-react';
 import { isDuplicateUrl, normalizeUrl } from '../utils/url';
 
 export default function AddBookmarkModal({ 
@@ -15,6 +15,7 @@ export default function AddBookmarkModal({
 }) {
   const [url, setUrl] = useState(initialUrl);
   const [tagInput, setTagInput] = useState(initialTags);
+  const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,9 +24,11 @@ export default function AddBookmarkModal({
       if (editingBookmark) {
         setUrl(editingBookmark.url || '');
         setTagInput(editingBookmark.tags?.join(', ') || '');
+        setTitle(editingBookmark.title || '');
       } else {
         setUrl(initialUrl || '');
         setTagInput(initialTags || '');
+        setTitle('');
       }
       setError('');
     }
@@ -57,9 +60,9 @@ export default function AddBookmarkModal({
     const uniqueTags = [...new Set(tags)];
 
     if (editingBookmark) {
-      await onUpdate(editingBookmark.id, { url, tags: uniqueTags });
+      await onUpdate(editingBookmark.id, { url, tags: uniqueTags, title: title.trim() || null });
     } else {
-      await onAdd({ url, tags: uniqueTags });
+      await onAdd({ url, tags: uniqueTags, title: title.trim() || null });
     }
 
     setLoading(false);
@@ -99,6 +102,19 @@ export default function AddBookmarkModal({
                 {error}
               </div>
             )}
+          </Form.Group>
+ 
+          <Form.Group className="mb-4">
+            <Form.Label className="text-muted small fw-bold text-uppercase tracking-wider mb-2 d-flex align-items-center gap-2">
+              <Type size={14} /> Title {editingBookmark ? '' : '(Optional)'}
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder={editingBookmark ? "Bookmark Title" : "Leave blank to auto-fetch title"}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="premium-input"
+            />
           </Form.Group>
 
           <Form.Group className="mb-4">

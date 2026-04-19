@@ -41,12 +41,17 @@ exports.scrapeMetadata = onDocumentCreated("users/{userId}/bookmarks/{bookmarkId
             }
         }
 
-        return snapshot.ref.update({
-            title: title.trim(),
+        const updateData = {
             description: description.trim(),
             favicon: favicon,
             metadataScrapedAt: new Date().toISOString()
-        });
+        };
+
+        if (!data.title) {
+            updateData.title = title.trim();
+        }
+
+        return snapshot.ref.update(updateData);
     } catch (error) {
         console.error(`Error scraping metadata for ${url}:`, error.message);
         return snapshot.ref.update({
