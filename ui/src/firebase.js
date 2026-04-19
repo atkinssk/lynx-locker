@@ -5,7 +5,7 @@ import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBaD01dK8FnVGQXrlyAhGIrhqLfkHSWagQ",
-  authDomain: "lynx-locker.firebaseapp.com",
+  authDomain: "lynx-locker-atkinssk.firebaseapp.com",
   projectId: "lynx-locker-atkinssk",
   storageBucket: "lynx-locker-atkinssk.firebasestorage.app",
   messagingSenderId: "37171517960",

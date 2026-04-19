@@ -16,7 +16,7 @@
     }
   ],
   "hosting": {
-    "site": "lynx-locker",
+    "site": "lynx-locker-app",
     "public": "ui/dist",
     "predeploy": [
       "npm --prefix ui run build"
