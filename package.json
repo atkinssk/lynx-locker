@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:ui": "cd ui && npm run dev",
+    "dev:emulators": "firebase emulators:start",
+    "dev": "concurrently \"npm run dev:emulators\" \"npm run dev:ui\"",
+    "build:ui": "cd ui && npm run build",
+    "deploy": "firebase deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "firebase-tools": "^15.15.0"
   }
 }
