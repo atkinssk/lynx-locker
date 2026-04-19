@@ -23,6 +23,7 @@ import ImportModal from './components/ImportModal';
 import ShortcutsModal from './components/ShortcutsModal';
 import { Search, Plus, LayoutGrid, Loader2, Bookmark, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button, Stack } from 'react-bootstrap';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,6 +36,7 @@ function App() {
   const [initialUrl, setInitialUrl] = useState('');
   const [initialTags, setInitialTags] = useState('');
   const [editingBookmark, setEditingBookmark] = useState(null);
+  const [selectedTag, setSelectedTag] = useState(null);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
@@ -81,16 +83,32 @@ function App() {
     return () => unsubscribeStore();
   }, [user]);
 
+  const allTags = useMemo(() => {
+    const tags = new Set();
+    bookmarks.forEach(b => {
+      b.tags?.forEach(tag => tags.add(tag));
+    });
+    return Array.from(tags).sort();
+  }, [bookmarks]);
+
   const filteredBookmarks = useMemo(() => {
-    if (!searchTerm.trim()) return bookmarks;
-    const term = searchTerm.toLowerCase();
-    return bookmarks.filter(b => 
-      (b.title?.toLowerCase().includes(term)) || 
-      (b.url?.toLowerCase().includes(term)) || 
-      (b.description?.toLowerCase().includes(term)) ||
-      (b.tags?.some(tag => tag.toLowerCase().includes(term)))
-    );
-  }, [bookmarks, searchTerm]);
+    let filtered = bookmarks;
+
+    if (selectedTag) {
+      filtered = filtered.filter(b => b.tags?.includes(selectedTag));
+    }
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(b => 
+        (b.title?.toLowerCase().includes(term)) || 
+        (b.url?.toLowerCase().includes(term)) || 
+        (b.description?.toLowerCase().includes(term)) ||
+        (b.tags?.some(tag => tag.toLowerCase().includes(term)))
+      );
+    }
+    return filtered;
+  }, [bookmarks, searchTerm, selectedTag]);
 
   const handleLogin = () => signInWithPopup(auth, googleProvider);
   const handleLogout = () => signOut(auth);
@@ -184,6 +202,30 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {allTags.length > 0 && (
+              <div className="mb-5 text-center">
+                <Stack direction="horizontal" gap={2} className="flex-wrap justify-content-center">
+                  <Button
+                    variant="link"
+                    className={`tag-pill text-decoration-none ${!selectedTag ? 'active' : ''}`}
+                    onClick={() => setSelectedTag(null)}
+                  >
+                    All
+                  </Button>
+                  {allTags.map(tag => (
+                    <Button
+                      key={tag}
+                      variant="link"
+                      className={`tag-pill text-decoration-none ${selectedTag === tag ? 'active' : ''}`}
+                      onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </Stack>
+              </div>
+            )}
 
             {filteredBookmarks.length > 0 ? (
               <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
