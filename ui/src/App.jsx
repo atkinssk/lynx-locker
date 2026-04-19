@@ -18,7 +18,7 @@ import { auth, db, googleProvider } from './firebase';
 import Navbar from './components/Navbar';
 import BookmarkCard from './components/BookmarkCard';
 import AddBookmarkModal from './components/AddBookmarkModal';
-import { Search, Plus, Filter, LayoutGrid, Loader2, Bookmark } from 'lucide-react';
+import { Search, Plus, LayoutGrid, Loader2, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -99,93 +99,99 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="d-flex align-items-center justify-content-center vh-100 bg-bg">
         <Loader2 className="text-primary animate-spin" size={48} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-vh-100 bg-bg pb-5">
       <Navbar user={user} onLogin={handleLogin} onLogout={handleLogout} />
 
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="container-xl px-4">
         {user ? (
           <div className="animate-fade-in">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-10">
-              <div className="relative w-full md:max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
-                <input 
-                  type="text" 
-                  placeholder="Search by title, tag, or URL..." 
-                  className="pl-12 h-12 bg-surface/50 border-border focus:border-primary transition-all"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="row g-4 align-items-center justify-content-between mb-5">
+              <div className="col-12 col-md-6 col-lg-5">
+                <div className="position-relative">
+                  <Search className="position-absolute translate-middle-y text-muted" style={{left: '1rem', top: '50%'}} size={20} />
+                  <input 
+                    type="text" 
+                    placeholder="Search by title, tag, or URL..." 
+                    className="form-control premium-input shadow-sm"
+                    style={{paddingLeft: '3rem'}}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
               </div>
 
-              <div className="flex gap-2 w-full md:w-auto">
-                <button onClick={() => setIsModalOpen(true)} className="btn btn-primary flex-1 md:flex-none h-12 px-6">
+              <div className="col-12 col-md-auto">
+                <button 
+                  onClick={() => setIsModalOpen(true)} 
+                  className="btn btn-premium px-4 shadow-lg w-100"
+                >
                   <Plus size={20} />
-                  Add Bookmark
+                  <span>Add Bookmark</span>
                 </button>
               </div>
             </div>
 
             {filteredBookmarks.length > 0 ? (
-              <motion.div 
-                layout 
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              >
-                <AnimatePresence>
+              <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                <AnimatePresence mode="popLayout">
                   {filteredBookmarks.map(bookmark => (
-                    <BookmarkCard 
-                      key={bookmark.id} 
-                      bookmark={bookmark} 
-                      onDelete={handleDeleteBookmark} 
-                    />
+                    <div key={bookmark.id} className="col">
+                      <BookmarkCard 
+                        bookmark={bookmark} 
+                        onDelete={handleDeleteBookmark} 
+                      />
+                    </div>
                   ))}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             ) : (
-              <div className="text-center py-20 glass rounded-3xl border-dashed border-2">
-                <div className="bg-surface w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-border">
-                  <LayoutGrid className="text-text-muted" size={32} />
+              <div className="text-center py-5 glass rounded-pill-custom border-dashed border-2">
+                <div className="bg-dark d-inline-flex p-4 rounded-4 mb-4 border border-secondary shadow-lg">
+                  <LayoutGrid className="text-muted" size={48} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">No bookmarks found</h3>
-                <p className="text-text-muted">
-                  {searchTerm ? "Try a different search term" : "Click 'Add Bookmark' to get started"}
+                <h3 className="h2 fw-bold mb-3 text-white">No bookmarks found</h3>
+                <p className="text-muted lead">
+                  {searchTerm ? "Try a different search term" : "Ready to start? Click 'Add Bookmark' to save your first link."}
                 </p>
               </div>
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-            <div className="mb-8 relative">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-              <div className="relative glass p-6 rounded-3xl border-primary/20">
-                <Bookmark className="text-primary" size={64} />
+          <div className="py-5 text-center animate-fade-in d-flex flex-column align-items-center">
+            <div className="mb-5 position-relative">
+              <div className="position-absolute top-50 start-50 translate-middle bg-primary opacity-25" style={{width: '200px', height: '200px', filter: 'blur(80px)', borderRadius: '100%'}} />
+              <div className="glass p-5 rounded-circle border-primary border-opacity-25 shadow-2xl position-relative">
+                <Bookmark className="text-primary" size={80} />
               </div>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-white via-white to-primary/40 bg-clip-text text-transparent">
-              Organize your links,<br/>perfectly.
+            <h1 className="display-3 fw-bold tracking-tight mb-4 text-white">
+              Organize your links,<br/><span className="text-primary">perfectly.</span>
             </h1>
-            <p className="text-text-muted text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
+            <p className="lead text-muted max-w-2xl mx-auto mb-5 px-4" style={{maxWidth: '700px'}}>
               LynxLocker automatically fetches metadata, favicons, and organizes your bookmarks with powerful tagging and instant search.
             </p>
-            <button onClick={handleLogin} className="btn btn-primary h-14 px-10 text-lg shadow-xl shadow-primary/20">
+            <button onClick={handleLogin} className="btn btn-premium btn-lg px-5 py-3 shadow-2xl">
               Get Started for Free
             </button>
             
-            <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+            <div className="row g-4 mt-5 pt-5 w-100 justify-content-center" style={{maxWidth: '1100px'}}>
               {[
                 { title: 'Auto Metadata', desc: 'Saves time by automatically pulling titles and descriptions.' },
                 { title: 'Lucid Search', desc: 'Instant client-side filtering for zero-latency retrieval.' },
                 { title: 'Tagging System', desc: 'Simple but powerful tagging for deep organization.' }
               ].map(feature => (
-                <div key={feature.title} className="glass p-6 rounded-2xl text-left border-border/50 hover:border-primary/20 transition-colors">
-                  <h4 className="font-bold text-lg mb-2 text-white">{feature.title}</h4>
-                  <p className="text-text-muted text-sm">{feature.desc}</p>
+                <div key={feature.title} className="col-12 col-md-4">
+                  <div className="glass p-4 rounded-4 h-100 text-start border-opacity-10 hover-border-primary transition-all">
+                    <h5 className="fw-bold mb-3 text-white">{feature.title}</h5>
+                    <p className="text-muted small mb-0">{feature.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
