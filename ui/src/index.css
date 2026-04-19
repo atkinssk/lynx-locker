@@ -200,3 +200,11 @@ h1, h2, h3, h4, .navbar-brand {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+@media (max-width: 768px) {
+  .tag-pill {
+    padding: 0.25rem 0.6rem !important;
+    font-size: 0.65rem !important;
+    margin-bottom: 0.25rem;
+  }
+}

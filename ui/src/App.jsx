@@ -205,7 +205,7 @@ function App() {
 
             {allTags.length > 0 && (
               <div className="mb-5 text-center">
-                <Stack direction="horizontal" gap={2} className="flex-wrap justify-content-center">
+                <Stack direction="horizontal" className="flex-wrap justify-content-center gap-1 gap-md-2">
                   <Button
                     variant="link"
                     className={`tag-pill text-decoration-none ${!selectedTag ? 'active' : ''}`}
