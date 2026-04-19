@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
 import { X, Link as LinkIcon, Plus, Tag as TagIcon } from 'lucide-react';
 
-export default function AddBookmarkModal({ isOpen, onClose, onAdd }) {
-  const [url, setUrl] = useState('');
-  const [tagInput, setTagInput] = useState('');
+export default function AddBookmarkModal({ isOpen, onClose, onAdd, initialUrl = '', initialTags = '' }) {
+  const [url, setUrl] = useState(initialUrl);
+  const [tagInput, setTagInput] = useState(initialTags);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setUrl(initialUrl || '');
+      setTagInput(initialTags || '');
+    }
+  }, [isOpen, initialUrl, initialTags]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

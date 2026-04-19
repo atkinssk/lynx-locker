@@ -18,6 +18,7 @@ import { auth, db, googleProvider } from './firebase';
 import Navbar from './components/Navbar';
 import BookmarkCard from './components/BookmarkCard';
 import AddBookmarkModal from './components/AddBookmarkModal';
+import ShortcutsModal from './components/ShortcutsModal';
 import { Search, Plus, LayoutGrid, Loader2, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -27,12 +28,30 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [initialUrl, setInitialUrl] = useState('');
+  const [initialTags, setInitialTags] = useState('');
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
     });
+    
+    // Check for query parameters for shortcuts
+    const params = new URLSearchParams(window.location.search);
+    const urlParam = params.get('url');
+    const tagsParam = params.get('tags');
+    
+    if (urlParam) {
+      setInitialUrl(urlParam);
+      if (tagsParam) setInitialTags(tagsParam);
+      setIsModalOpen(true);
+      
+      // Clean up URL without refreshing
+      window.history.replaceState({}, document.title, "/");
+    }
+
     return () => unsubscribeAuth();
   }, []);
 
@@ -107,7 +126,12 @@ function App() {
 
   return (
     <div className="min-vh-100 bg-bg pb-5">
-      <Navbar user={user} onLogin={handleLogin} onLogout={handleLogout} />
+      <Navbar 
+        user={user} 
+        onLogin={handleLogin} 
+        onLogout={handleLogout} 
+        onShowShortcuts={() => setIsShortcutsModalOpen(true)}
+      />
 
       <main className="container-xl px-4">
         {user ? (
@@ -203,6 +227,13 @@ function App() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onAdd={handleAddBookmark} 
+        initialUrl={initialUrl}
+        initialTags={initialTags}
+      />
+
+      <ShortcutsModal 
+        isOpen={isShortcutsModalOpen} 
+        onClose={() => setIsShortcutsModalOpen(false)} 
       />
     </div>
   );

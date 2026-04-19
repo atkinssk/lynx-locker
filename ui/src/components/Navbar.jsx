@@ -1,7 +1,7 @@
 import React from 'react';
-import { LogIn, LogOut, Bookmark, User } from 'lucide-react';
+import { LogIn, LogOut, Bookmark, User, MousePointer2 } from 'lucide-react';
 
-export default function Navbar({ user, onLogin, onLogout }) {
+export default function Navbar({ user, onLogin, onLogout, onShowShortcuts }) {
   return (
     <nav className="navbar navbar-expand-lg glass sticky-top px-3 py-2 mb-5">
       <div className="container-xl d-flex justify-content-between align-items-center">
@@ -15,7 +15,16 @@ export default function Navbar({ user, onLogin, onLogout }) {
         <div className="d-flex align-items-center gap-3">
           {user ? (
             <div className="d-flex align-items-center gap-3">
-              <div className="d-flex align-items-center gap-2 bg-dark px-3 py-1.5 rounded-pill border border-secondary">
+              <button 
+                onClick={onShowShortcuts} 
+                className="btn btn-premium-ghost d-flex align-items-center gap-2 px-3 py-2"
+                title="Browser Shortcuts"
+              >
+                <MousePointer2 size={18} />
+                <span className="d-none d-md-inline text-sm">Shortcuts</span>
+              </button>
+              
+              <div className="d-flex align-items-center gap-2 bg-dark px-3 py-1.5 rounded-pill border border-secondary shadow-sm">
                 {user.photoURL ? (
                   <img src={user.photoURL} alt={user.displayName} className="rounded-circle" style={{width: '24px', height: '24px'}} />
                 ) : (
@@ -23,11 +32,13 @@ export default function Navbar({ user, onLogin, onLogout }) {
                 )}
                 <span className="text-sm fw-medium d-none d-sm-inline text-light">{user.displayName}</span>
               </div>
+              
               <button onClick={onLogout} className="btn btn-premium-ghost d-flex align-items-center gap-2 px-3 py-2">
                 <LogOut size={18} />
                 <span className="d-none d-sm-inline text-sm">Logout</span>
               </button>
             </div>
+
           ) : (
             <button onClick={onLogin} className="btn btn-premium shadow-lg">
               <LogIn size={18} />
