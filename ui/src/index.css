@@ -136,3 +136,36 @@ h1, h2, h3, h4, .navbar-brand {
 .text-muted {
   color: var(--text-muted) !important;
 }
+
+.premium-progress {
+  height: 0.5rem !important;
+  background-color: var(--surface-hover) !important;
+  border-radius: 1rem !important;
+  overflow: hidden;
+}
+
+.premium-progress .progress-bar {
+  background: linear-gradient(90deg, var(--primary), var(--accent)) !important;
+  border-radius: 1rem !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-bg-primary:hover {
+  background-color: var(--primary) !important;
+}
+
+.hover-bg-opacity-5:hover {
+  --bs-bg-opacity: 0.05;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

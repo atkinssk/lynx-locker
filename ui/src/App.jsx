@@ -18,8 +18,9 @@ import { auth, db, googleProvider } from './firebase';
 import Navbar from './components/Navbar';
 import BookmarkCard from './components/BookmarkCard';
 import AddBookmarkModal from './components/AddBookmarkModal';
+import ImportModal from './components/ImportModal';
 import ShortcutsModal from './components/ShortcutsModal';
-import { Search, Plus, LayoutGrid, Loader2, Bookmark } from 'lucide-react';
+import { Search, Plus, LayoutGrid, Loader2, Bookmark, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [initialUrl, setInitialUrl] = useState('');
   const [initialTags, setInitialTags] = useState('');
@@ -151,10 +153,17 @@ function App() {
                 </div>
               </div>
 
-              <div className="col-12 col-md-auto">
+              <div className="col-12 col-md-auto d-flex gap-2">
+                <button 
+                  onClick={() => setIsImportModalOpen(true)} 
+                  className="btn btn-premium-ghost px-4 shadow-sm"
+                >
+                  <Upload size={20} />
+                  <span className="d-none d-sm-inline">Import</span>
+                </button>
                 <button 
                   onClick={() => setIsModalOpen(true)} 
-                  className="btn btn-premium px-4 shadow-lg w-100"
+                  className="btn btn-premium px-4 shadow-lg flex-grow-1"
                 >
                   <Plus size={20} />
                   <span>Add Bookmark</span>
@@ -227,8 +236,16 @@ function App() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onAdd={handleAddBookmark} 
+        bookmarks={bookmarks}
         initialUrl={initialUrl}
         initialTags={initialTags}
+      />
+
+      <ImportModal 
+        isOpen={isImportModalOpen} 
+        onClose={() => setIsImportModalOpen(false)} 
+        user={user}
+        existingBookmarks={bookmarks}
       />
 
       <ShortcutsModal 

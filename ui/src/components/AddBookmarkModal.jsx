@@ -1,23 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form } from 'react-bootstrap';
-import { X, Link as LinkIcon, Plus, Tag as TagIcon } from 'lucide-react';
+import { X, Link as LinkIcon, Plus, Tag as TagIcon, AlertTriangle } from 'lucide-react';
+import { isDuplicateUrl } from '../utils/url';
 
-export default function AddBookmarkModal({ isOpen, onClose, onAdd, initialUrl = '', initialTags = '' }) {
+export default function AddBookmarkModal({ isOpen, onClose, onAdd, bookmarks = [], initialUrl = '', initialTags = '' }) {
   const [url, setUrl] = useState(initialUrl);
   const [tagInput, setTagInput] = useState(initialTags);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       setUrl(initialUrl || '');
       setTagInput(initialTags || '');
+      setError('');
     }
   }, [isOpen, initialUrl, initialTags]);
 
+  const handleUrlChange = (newUrl) => {
+    setUrl(newUrl);
+    if (error) setError('');
+  };
+
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     if (!url) return;
+
+    if (isDuplicateUrl(url, bookmarks)) {
+      setError('This URL is already in your bookmarks.');
+      return;
+    }
 
     setLoading(true);
     const tags = tagInput
@@ -52,11 +64,17 @@ export default function AddBookmarkModal({ isOpen, onClose, onAdd, initialUrl = 
               type="url"
               placeholder="https://example.com"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="premium-input"
+              onChange={(e) => handleUrlChange(e.target.value)}
+              className={`premium-input ${error ? 'border-danger' : ''}`}
               required
               autoFocus
             />
+            {error && (
+              <div className="text-danger small mt-2 d-flex align-items-center gap-1 animate-fade-in">
+                <AlertTriangle size={14} />
+                {error}
+              </div>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-4">
