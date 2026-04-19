@@ -18,7 +18,7 @@ import { auth, db, googleProvider } from './firebase';
 import Navbar from './components/Navbar';
 import BookmarkCard from './components/BookmarkCard';
 import AddBookmarkModal from './components/AddBookmarkModal';
-import { Search, Plus, Filter, LayoutGrid, Loader2 } from 'lucide-react';
+import { Search, Plus, Filter, LayoutGrid, Loader2, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
