@@ -39,6 +39,12 @@ export default function AddBookmarkModal({
     if (error) setError('');
   };
 
+  const handleRemoveTag = (tagToRemove) => {
+    const tags = tagInput.split(',').map(t => t.trim()).filter(t => t);
+    const updatedTags = tags.filter(t => t !== tagToRemove);
+    setTagInput(updatedTags.join(', '));
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,8 +139,15 @@ export default function AddBookmarkModal({
           {tagInput.trim() && (
             <div className="d-flex flex-wrap gap-2 mb-4">
               {tagInput.split(',').map(t => t.trim()).filter(t => t).map(tag => (
-                <span key={tag} className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 small text-uppercase fw-bold">
+                <span 
+                  key={tag} 
+                  onClick={() => handleRemoveTag(tag)}
+                  className="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1.5 small text-uppercase fw-bold d-flex align-items-center gap-1 cursor-pointer hover-bg-opacity-25 transition-all"
+                  title="Click to remove"
+                  style={{ userSelect: 'none' }}
+                >
                   {tag}
+                  <X size={12} className="opacity-50" />
                 </span>
               ))}
             </div>
