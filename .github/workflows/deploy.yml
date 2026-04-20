@@ -3,14 +3,27 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request:
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build and Deploy
+      - name: Install dependencies
+        run: npm install
+      - name: Build UI
         run: |
+          cd ui
           npm install
-          cd ui && npm install && npm run build
-          cd ../functions && npm install
-          npx firebase deploy --only hosting,functions --token ${{ secrets.FIREBASE_TOKEN }}
+          npm run build
+      - name: Install Functions dependencies
+        run: |
+          cd functions
+          npm install
+      - name: Deploy
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            npx firebase hosting:channel:deploy preview --token ${{ secrets.FIREBASE_TOKEN }}
+          else
+            npx firebase deploy --only hosting,functions --token ${{ secrets.FIREBASE_TOKEN }}
+          fi
