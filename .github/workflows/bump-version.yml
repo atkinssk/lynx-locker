@@ -1,0 +1,78 @@
+name: Bump Patch Version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Bump patch version
+        id: bump
+        run: |
+          # Read current version from root package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Split version into major.minor.patch
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          
+          # Bump patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          echo "New version: $NEW_VERSION"
+          
+          # Update root package.json
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./package.json');
+            pkg.version = '$NEW_VERSION';
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          
+          # Update functions/package.json
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./functions/package.json');
+            pkg.version = '$NEW_VERSION';
+            fs.writeFileSync('./functions/package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          
+          # Update ui/package.json
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./ui/package.json');
+            pkg.version = '$NEW_VERSION';
+            fs.writeFileSync('./ui/package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Commit and tag
+        env:
+          NEW_VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          git add package.json functions/package.json ui/package.json
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git tag "v$NEW_VERSION"
+          git push origin HEAD
+          git push origin "v$NEW_VERSION"
